@@ -3,12 +3,13 @@ import axios from 'axios';
 import './App.css';
 
 function App() {
+  const [name, setName] = useState('');
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
 
-  const fetchApiData = async () => {
+  const fetchApiData = async (name) => {
     try {
-      const response = await axios.get(`https://ipinfo.io/2001:4860:7:222::ff/geo`);
+      const response = await axios.get(`https://api.nationalize.io?name=${name}`);
       console.log("response", response);
       setData(response.data);
     } catch (error) {
@@ -17,21 +18,30 @@ function App() {
     }
   };
 
-  useEffect(() => {
-    fetchApiData();
-  }, []);
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    fetchApiData(name);
+  };
 
   return (
     <>
+      <form onSubmit={handleSubmit}>
+        <input 
+          type="text" 
+          value={name} 
+          onChange={(e) => setName(e.target.value)} 
+          placeholder="Enter a name to guess the nationality" 
+        />
+        <button type="submit">Enter</button>
+      </form>
       {error ? (
         <p>Oops! Something went wrong: {error}</p>
       ) : (
-        data && data.ip && (
-          <ul>
-            <li>City: {data.city}</li>
-            <li>Region: {data.region}</li>
-            <li>Country: {data.country}</li>
-          </ul>
+        data && data.country && (
+          <div>
+            <p>The nationality of "{name}" is:</p>
+            <p>{data.country[0].country_id}</p>
+          </div>
         )
       )}
     </>
