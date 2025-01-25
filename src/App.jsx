@@ -6,32 +6,33 @@ function App() {
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
 
+  useEffect(() => {
+    fetchApiData();
+  }, []);
+
   const fetchApiData = async () => {
     try {
-      const response = await axios.get(`https://official-joke-api.appspot.com/random_joke`);
+      const response = await axios.get(`https://randomuser.me/api/`);
       console.log("response", response);
-      setData(response.data);
+      setData(response.data.results[0]);
     } catch (error) {
       console.log("error", error.message);
       setError(error.message);
     }
   };
 
-  useEffect(() => {
-    fetchApiData();
-  }, []);
-
   return (
     <>
-      {error ? (
+      {data && (
+        <div>
+          <p>Name: {data.name.first} {data.name.last}</p>
+          <p>Age: {data.dob.age}</p>
+          <p>Gender: {data.gender}</p>
+          <img src={data.picture.large} alt="User" />
+        </div>
+      )}
+      {error && (
         <p>Oops! Something went wrong: {error}</p>
-      ) : (
-        data && (
-          <div>
-            <p>q:{data.setup}</p>
-            <p>{data.punchline}</p>
-          </div>
-        )
       )}
     </>
   );
