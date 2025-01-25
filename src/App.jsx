@@ -3,31 +3,50 @@ import axios from 'axios';
 import './App.css';
 
 function App() {
+  const [name, setName] = useState('');
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    async function fetchApiData() {
-      try {
-        const { data } = await axios.get('https://catfact.ninja/fact');
-        setData(data);
-      } catch (error) {
-        console.error("Error fetching data:", error.message);
-        setError(error.message);
-      }
+  const fetchApiData = async (name) => {
+    try {
+      const response = await axios.get(`https://api.agify.io?name=${name}`);
+      setData(response.data);
+      setError(null); // Clear any previous error
+    } catch (error) {
+      setError(error.message);
     }
+  };
 
-    fetchApiData();
-  }, []);
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!name.trim()) {
+      setError('Please enter a valid name');
+      return;
+    }
+    fetchApiData(name);
+  };
 
   return (
-    <div className="App">
+    <>
+      <form onSubmit={handleSubmit}>
+        <input 
+          type="text" 
+          value={name} 
+          onChange={(e) => setName(e.target.value)} 
+          placeholder="Enter a name to guess the age" 
+        />
+        <button type="submit">Guess Age</button>
+      </form>
       {error ? (
-        <p style={{ color: 'red' }}>Error: {error}</p>
+        <p style={{ color: 'red' }}>Oops! Something went wrong: {error}</p>
       ) : (
-        data && <p> Fact:{data.fact}</p>
+        data && (
+          <div>
+            <p>The age of "{name}" is {data.age} years.</p>
+          </div>
+        )
       )}
-    </div>
+    </>
   );
 }
 
