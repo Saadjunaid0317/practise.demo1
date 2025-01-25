@@ -143,7 +143,7 @@ function App() {
       }
     }
     
-    // Example calls
+  
     fetchPublicApis();
     fetchCatFact();
     fetchBitcoinPrice();
