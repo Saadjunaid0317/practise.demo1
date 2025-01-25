@@ -3,13 +3,12 @@ import axios from 'axios';
 import './App.css';
 
 function App() {
-  const [name, setName] = useState('');
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
 
-  const fetchApiData = async (name) => {
+  const fetchApiData = async () => {
     try {
-      const response = await axios.get(`https://api.nationalize.io?name=${name}`);
+      const response = await axios.get(`https://official-joke-api.appspot.com/random_joke`);
       console.log("response", response);
       setData(response.data);
     } catch (error) {
@@ -18,29 +17,19 @@ function App() {
     }
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    fetchApiData(name);
-  };
+  useEffect(() => {
+    fetchApiData();
+  }, []);
 
   return (
     <>
-      <form onSubmit={handleSubmit}>
-        <input 
-          type="text" 
-          value={name} 
-          onChange={(e) => setName(e.target.value)} 
-          placeholder="Enter a name to guess the nationality" 
-        />
-        <button type="submit">Enter</button>
-      </form>
       {error ? (
         <p>Oops! Something went wrong: {error}</p>
       ) : (
-        data && data.country && (
+        data && (
           <div>
-            <p>The nationality of "{name}" is:</p>
-            <p>{data.country[0].country_id}</p>
+            <p>q:{data.setup}</p>
+            <p>{data.punchline}</p>
           </div>
         )
       )}
