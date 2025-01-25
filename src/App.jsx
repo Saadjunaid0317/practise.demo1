@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import axios from 'axios';
 import './App.css';
 
@@ -6,43 +6,52 @@ function App() {
   const [name, setName] = useState('');
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const fetchApiData = async (name) => {
     try {
-      const response = await axios.get(`https://api.agify.io?name=${name}`);
+
+      const response = await axios.get(`https://api.genderize.io?name=${name}`);
       setData(response.data);
-      setError(null); // Clear any previous error
     } catch (error) {
       setError(error.message);
+    } finally {
+      setLoading(false); // Turn off loading state
     }
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!name.trim()) {
+    if (name.trim()) {
+      fetchApiData(name);
+    } else {
       setError('Please enter a valid name');
-      return;
     }
-    fetchApiData(name);
   };
 
   return (
     <>
       <form onSubmit={handleSubmit}>
-        <input 
-          type="text" 
-          value={name} 
-          onChange={(e) => setName(e.target.value)} 
-          placeholder="Enter a name to guess the age" 
+        <input
+          type="text"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="Enter a name to guess the gender"
+          aria-label="Enter a name"
         />
-        <button type="submit">Guess Age</button>
+        <button type="submit" disabled={!name.trim()}>
+          Enter
+        </button>
       </form>
-      {error ? (
-        <p style={{ color: 'red' }}>Oops! Something went wrong: {error}</p>
+
+      {loading ? (
+        <p>Loading...</p>
+      ) : error ? (
+        <p style={{ color: 'red' }}>{error}</p>
       ) : (
         data && (
           <div>
-            <p>The age of "{name}" is {data.age} years.</p>
+            <p>The gender of "{name}" is {data.gender}.</p>
           </div>
         )
       )}
